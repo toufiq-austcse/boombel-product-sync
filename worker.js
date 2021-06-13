@@ -5,7 +5,7 @@ async function getProducts(page) {
   try {
     let res = await axios.default.get(`https://portal.internet-bikes.com/api/twm/products?page=${page}`, {
       headers: {
-        Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvcG9ydGFsLmludGVybmV0LWJpa2VzLmNvbVwvYXBpXC90d21cL2F1dGhcL2F1dGhlbnRpY2F0ZSIsImlhdCI6MTYyMzU2NzQ4NywiZXhwIjoxNjIzNTY5Mjg3LCJuYmYiOjE2MjM1Njc0ODcsImp0aSI6IjhqeFhvSHdkS01EVWF0ckciLCJzdWIiOjYyNzYxNCwicHJ2IjoiOGI0MjJlNmY2NTc5MzJiOGFlYmNiMWJmMWUzNTZkZDc2YTM2NWJmMiJ9.WJlijZ35yVjSALxdHlI-RmXhBSV3UG_aKzKC_NH0A8o`,
+        Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvcG9ydGFsLmludGVybmV0LWJpa2VzLmNvbVwvYXBpXC90d21cL2F1dGhcL2F1dGhlbnRpY2F0ZSIsImlhdCI6MTYyMzU4OTMyMCwiZXhwIjoxNjIzNTkxMTIwLCJuYmYiOjE2MjM1ODkzMjAsImp0aSI6InBvMnB2NVJKYzJuU3Y3Mk0iLCJzdWIiOjYyNzYxNCwicHJ2IjoiOGI0MjJlNmY2NTc5MzJiOGFlYmNiMWJmMWUzNTZkZDc2YTM2NWJmMiJ9.BOb1Ov6kL6nJvTrHisBsLn_e1q-guc1c8pF1ZUdgaJw`,
       },
     });
     return res.data;
