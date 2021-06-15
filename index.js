@@ -1,4 +1,11 @@
 const { Worker } = require('worker_threads');
+const low = require('lowdb');
+const FileSync = require('lowdb/adapters/FileSync');
+const adapter = new FileSync('db.json');
+const db = low(adapter);
+db.defaults({ products: [{}] }).write();
+
+//db.get('products').push({ name: 'sadi' }).write();
 let segments = [
   {
     code: 0,
@@ -34,15 +41,15 @@ let segments = [
   },
   {
     code: 8,
-    name: 'Bookshop',
+    name: 'Book',
   },
   {
     code: 9,
-    name: 'Babyshop',
+    name: 'Baby',
   },
   {
     code: 10,
-    name: 'Outdoorshop',
+    name: 'Outdoor',
   },
   {
     code: 11,
@@ -50,11 +57,11 @@ let segments = [
   },
   {
     code: 12,
-    name: 'Partyshop',
+    name: 'Party',
   },
   {
     code: 13,
-    name: 'Petshop',
+    name: 'Pet',
   },
   {
     code: 14,
@@ -65,8 +72,7 @@ let segments = [
 function getProductName(name) {
   if (!name) return '';
   let modifiedName = name.toLowerCase();
-  modifiedName[0] = modifiedName[0].toUpperCase();
-  return modifiedName;
+  return modifiedName[0].toUpperCase() + name.slice(1);
 }
 function getWeight(shippingSize) {
   switch (shippingSize) {
@@ -168,83 +174,104 @@ function getSizeAttr(product) {
   if (index === -1) return '';
   return product.attributes[index].value_en;
 }
+function isRemoveAble(product) {
+  let { categories } = product;
+  categories.forEach((category) => {
+    let index = segments.findIndex((segment) => segment.code === category.parent_segment);
+    if (index < 0) return true;
+    let segment = segments[index];
+    if (segment.name === 'Bikes') {
+      if (category.name_en === 'Bicycles' || category.parent_name_en === 'Bicycles') return true;
+    }
+    if (segment.name === 'Home and Garden') {
+      if (category.name_en === 'Electronics' || category.parent_name_en === 'Electronics') return true;
+    }
+  });
+  return false;
+}
+
+function postToBoombel(product) {
+
+}
 function processProducts(products) {
   products.forEach((product) => {
-    let id = Date.now;
-    let modifiedProduct = {
-      ID: id,
-      Type: 'Simple',
-      SKU: id,
-      Name: getProductName(product.name_en),
-      Published: 1,
-      is_featured: 0,
-      'Visibility in catalog': 'visible',
-      'Short description': '',
-      Description: product.description_en ? product.description_en : '',
-      'Date sale price starts': '',
-      'Date sale price ends': '',
-      'Tax status': 'taxable',
-      'Tax class': '',
-      'In stock?': 1,
-      Stock: product.stock ? product.stock : 0,
-      'Low stock amount': '',
-      'Backorders allowed': '',
-      'Sold individually?': 0,
-      'Weight (kg)': getWeight(product.shipping_size),
-      'Length (cm)': '',
-      'Width (cm)': '',
-      'Height (cm)': '',
-      'Allow customer reviews': 0,
-      'Purchase note': '',
-      'Sale price': '',
+    if (!isRemoveAble(product)) {
+      let id = Date.now();
+      let modifiedProduct = {
+        id: id,
+        name: getProductName(product.name_en),
+        regular_price: getPrice(product),
+        description: product.description_en ? product.description_en : '',
+        type: 'Simple',
+        SKU: id,
+       
+        Published: 1,
+        is_featured: 0,
+        'Visibility in catalog': 'visible',
+        'Short description': '',
+      
+        'Date sale price starts': '',
+        'Date sale price ends': '',
+        'Tax status': 'taxable',
+        'Tax class': '',
+        'In stock?': 1,
+        Stock: product.stock ? product.stock : 0,
+        'Low stock amount': '',
+        'Backorders allowed': '',
+        'Sold individually?': 0,
+        'Weight (kg)': getWeight(product.shipping_size),
+        'Length (cm)': '',
+        'Width (cm)': '',
+        'Height (cm)': '',
+        'Allow customer reviews': 0,
+        'Purchase note': '',
+        'Sale price': '',
+        
+        Categories: getCategories(product),
+        Tags: getTags(product),
+        'Shipping class': '',
+        Images: getImages(product),
+        'Download limit': '',
+        'Download expiry days': '',
+        Parent: '',
+        'Grouped products': '',
+        Upsells: '',
+        'Cross-sells': '',
+        'External URL': '',
+        'Button text': '',
+        Position: '',
+        'Meta: _wxr_import_user_slug': '',
+        'Meta: big_store_sidebar_dyn': '',
 
-      //sd
-      'Regular price': getPrice(product),
-      Categories: getCategories(product),
-      Tags: getTags(product),
-      'Shipping class': '',
-      Images: getImages(product),
-      'Download limit': '',
-      'Download expiry days': '',
-      Parent: '',
-      'Grouped products': '',
-      Upsells: '',
-      'Cross-sells': '',
-      'External URL': '',
-      'Button text': '',
-      Position: '',
-      'Meta: _wxr_import_user_slug': '',
-      'Meta: big_store_sidebar_dyn': '',
+        'Attribute 1 name': 'Brand',
+        'Attribute 1 value(s)': product.brand,
+        'Attribute 1 visible': 1,
+        'Attribute 1 global': 1,
 
-      'Attribute 1 name': 'Brand',
-      'Attribute 1 value(s)': product.brand,
-      'Attribute 1 visible': 1,
-      'Attribute 1 global': 1,
+        'Attribute 2 name': 'Color',
+        'Attribute 2 value(s)': getColorAttr(product),
+        'Attribute 2 visible': 1,
+        'Attribute 2 global': 1,
 
-      'Attribute 2 name': 'Color',
-      'Attribute 2 value(s)': getColorAttr(product),
-      'Attribute 2 visible': 1,
-      'Attribute 2 global': 1,
+        'Attribute 3 name': 'Gender',
+        'Attribute 3 value(s)': getGenderAttr(product),
+        'Attribute 3 visible': 1,
+        'Attribute 3 global': 1,
 
-      'Attribute 3 name': 'Gender',
-      'Attribute 3 value(s)': getGenderAttr(product),
-      'Attribute 3 visible': 1,
-      'Attribute 3 global': 1,
+        'Attribute 4 name': 'Material',
+        'Attribute 4 value(s)': getMaterialAttr(product),
+        'Attribute 4 visible': 1,
+        'Attribute 4 global': 1,
 
-      'Attribute 4 name': 'Material',
-      'Attribute 4 value(s)': getMaterialAttr(product),
-      'Attribute 4 visible': 1,
-      'Attribute 4 global': 1,
-
-      'Attribute 5 name': 'Size',
-      'Attribute 5 value(s)': getSizeAttr(product),
-      'Attribute 5 visible': 1,
-      'Attribute 5 global': 1,
-      'Meta: _last_editor_used_jetpack': '',
-      'Meta: _wp_page_template': 'default',
-      'Attribute 1 default': '',
-    };
-    console.log(modifiedProduct);
+        'Attribute 5 name': 'Size',
+        'Attribute 5 value(s)': getSizeAttr(product),
+        'Attribute 5 visible': 1,
+        'Attribute 5 global': 1,
+        'Meta: _last_editor_used_jetpack': '',
+        'Meta: _wp_page_template': 'default',
+        'Attribute 1 default': '',
+      };
+    }
   });
 }
 (async () => {
@@ -261,8 +288,7 @@ function processProducts(products) {
   //Listen for a message from worker
   worker1.on('message', (result) => {
     total += 1;
-    console.log('yo');
-   // processProducts(result);
+    processProducts(result);
   });
 
   let worker2 = new Worker('./worker.js', { workerData: { start: 1001, end: 2000 } });
