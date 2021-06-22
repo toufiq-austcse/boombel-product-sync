@@ -200,22 +200,6 @@ function getAttributes(product) {
   }));
 }
 
-async function postToBoombel(modifiedData) {
-  try {
-    let res = await axios.post('https://boombel.eu/wp-json/wc/v3/products', modifiedData, {
-      auth: {
-        username: `ck_380d746b8f0878e48bec98d831906c907ab4d8df`,
-        password: `cs_2ed49a196bc9f0da900c23617a8a251218f4d462`,
-      },
-    });
-    console.log('modified ', modifiedData);
-    console.log(res.data);
-    count++;
-    console.log('count ', count);
-  } catch (error) {
-    console.log('error in posting boombel', error.response.data);
-  }
-}
 
 async function getApiToken() {
   try {
@@ -259,7 +243,7 @@ async function processProducts(products) {
         regular_price: getPrice(product).toString(),
         description: product.description_en ? product.description_en : '',
         type: 'simple',
-        sku: product.id,
+        sku: product.id.toString(),
         published: 1,
         is_featured: 0,
         catalog_visibility: 'visible',
