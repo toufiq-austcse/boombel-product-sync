@@ -3,7 +3,6 @@ let axios = require('axios');
 let fs = require('fs');
 let token = fs.readFileSync('token.txt', { encoding: 'utf-8' });
 
-
 async function getProducts(page) {
   try {
     let res = await axios.default.get(`https://portal.internet-bikes.com/api/twm/products?page=${page}`, {
@@ -11,10 +10,11 @@ async function getProducts(page) {
         Authorization: `Bearer ${token}`,
       },
     });
+    fs.writeFileSync('page.txt', page.toString(), { encoding: 'utf-8' });
     return res.data;
   } catch (error) {
     console.log('error in calling ', page);
-    console.log(error.message);
+    console.log(error);
   }
 }
 

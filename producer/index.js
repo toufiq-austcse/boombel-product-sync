@@ -1,8 +1,20 @@
 const { Worker } = require('worker_threads');
-const low = require('lowdb');
+const axios = require('axios');
 const boombelCategories = require('./categories');
+const AWS = require('aws-sdk');
+const fs = require('fs');
+let cron = require('node-cron');
 
 const QUEUE_URL = `https://sqs.ap-southeast-1.amazonaws.com/584482757797/products`;
+let AWSAccessKeyId = 'AKIAYQFPDDSSQ76MLM4Y';
+let AWSSecretKey = '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';
+let sqs = new AWS.SQS({
+  region: 'ap-southeast-1',
+  credentials: {
+    accessKeyId: AWSAccessKeyId,
+    secretAccessKey: AWSSecretKey,
+  },
+});
 let count = 0;
 //db.get('products').push({ name: 'sadi' }).write();
 let segments = [
@@ -98,7 +110,7 @@ function getPrice(product) {
     let index = segments.findIndex((segment) => segment.code === segmentCode);
     if (index < 0) return 0;
     let segment = segments[index];
-    if (segment.name === 'Babyshop' || segment.name === 'Outdoorshop' || segment.name === 'Health and Beauty') {
+    if (segment.name === 'Baby' || segment.name === 'Outdoor' || segment.name === 'Health & Beauty') {
       totalPrice = consumer_price + (40 / 100) * consumer_price + vat + 4;
       return totalPrice.toFixed(2);
     }
@@ -116,11 +128,15 @@ function getCategories(product) {
     if (index < 0) continue;
     let segment = segments[index];
     let filteredCategories = boombelCategories.filter(
-      (bCat) => bCat.name === cat.parent_name_en && bCat.parent == segment.id
+      (bCat) => bCat.name == cat.parent_name_en && bCat.parent == segment.id
     );
-    if (filteredCategories.length === 0) continue;
 
-    result.push(filteredCategories[0]);
+    if (filteredCategories.length === 0) continue;
+    let finalCategories = boombelCategories.filter(
+      (bCat) => bCat.parent === filteredCategories[0].id && bCat.name === cat.name_en
+    );
+    if (finalCategories.length === 0) continue;
+    result.push(...finalCategories);
   }
   return result;
 }
@@ -184,25 +200,8 @@ function getAttributes(product) {
   }));
 }
 
-function isRemoveAble(product) {
-  let { categories } = product;
-  categories.forEach((category) => {
-    let index = segments.findIndex((segment) => segment.code === category.parent_segment);
-    if (index < 0) return true;
-    let segment = segments[index];
-    if (segment.name === 'Bikes') {
-      if (category.name_en === 'Bicycles' || category.parent_name_en === 'Bicycles') return true;
-    }
-    if (segment.name === 'Home and Garden') {
-      if (category.name_en === 'Electronics' || category.parent_name_en === 'Electronics') return true;
-    }
-  });
-  return false;
-}
-
 async function postToBoombel(modifiedData) {
   try {
-    // console.log(modifiedData);
     let res = await axios.post('https://boombel.eu/wp-json/wc/v3/products', modifiedData, {
       auth: {
         username: `ck_380d746b8f0878e48bec98d831906c907ab4d8df`,
@@ -228,57 +227,77 @@ async function getApiToken() {
     fs.writeFileSync('token.txt', token, { encoding: 'utf-8' });
   } catch (error) {
     console.log('Error in getting API Token..please try 6 minutes later');
+    throw new Error(error);
   }
 }
 function delay(timeInMs) {
   return new Promise((resolve) => setTimeout(resolve, timeInMs));
 }
 
-function sendToSqs(data) {
-  
+async function sendToSqs(body) {
+  try {
+    let res = await sqs
+      .sendMessage({
+        MessageBody: body,
+        QueueUrl: QUEUE_URL,
+      })
+      .promise();
+    return res;
+  } catch (error) {
+    console.log('error in sending to sqs ', error.message);
+  }
 }
 let i = 0;
 async function processProducts(products) {
   for (let product of products) {
-    await delay(1000);
-    console.log('called');
-    let categories = getCategories(product);
-    if (categories.length === 0) continue;
-    console.log('categories ', categories);
-    let id = Date.now();
-    let modifiedProduct = {
-      name: getProductName(product.name_en),
-      regular_price: getPrice(product).toString(),
-      description: product.description_en ? product.description_en : '',
-      type: 'simple',
-      sku: id.toString(),
-      published: 1,
-      is_featured: 0,
-      catalog_visibility: 'visible',
-      tax_status: 'taxable',
-      stock_status: 'instock',
-      Stock: product.stock ? product.stock : 0,
-      sold_individually: false,
-      weight: getWeight(product.shipping_size).toString(),
-      dimensions: {
-        length: '',
-        width: getWeight(product.shipping_size).toString(),
-        height: '',
-      },
-      reviews_allowed: 0,
-      categories,
-      tags: getTags(product),
-      images: getImages(product),
-      attributes: getAttributes(product),
-    };
-    await postToBoombel(modifiedProduct);
+    try {
+      await delay(1000);
+      let categories = getCategories(product);
+      if (categories.length === 0) continue;
+      let modifiedProduct = {
+        name: getProductName(product.name_en),
+        regular_price: getPrice(product).toString(),
+        description: product.description_en ? product.description_en : '',
+        type: 'simple',
+        sku: product.id,
+        published: 1,
+        is_featured: 0,
+        catalog_visibility: 'visible',
+        tax_status: 'taxable',
+        stock_status: 'instock',
+        Stock: product.stock ? product.stock : 0,
+        sold_individually: false,
+        weight: getWeight(product.shipping_size).toString(),
+        dimensions: {
+          length: '',
+          width: getWeight(product.shipping_size).toString(),
+          height: '',
+        },
+        reviews_allowed: 0,
+        categories,
+        tags: getTags(product),
+        images: getImages(product),
+        attributes: getAttributes(product),
+      };
+      let res = await sendToSqs(JSON.stringify(modifiedProduct));
+    } catch (error) {
+      console.log(error.message);
+    }
   }
 }
+
+cron.schedule('*/7 * * * *', async () => {
+  console.log('updating token');
+  try {
+    await getApiToken();
+  } catch (error) {
+    console.log('error in cron ', error.message);
+  }
+});
 (async () => {
   try {
     await getApiToken();
-    let total = 0;
-    let worker1 = new Worker('./worker.js', { workerData: { start: 1, end: 1000 } });
+    let worker1 = new Worker('./worker.js', { workerData: { start: 1, end: 6600 } });
     worker1.on('error', (error) => {
       console.log(error);
     });
@@ -289,10 +308,10 @@ async function processProducts(products) {
 
     //Listen for a message from worker
     worker1.on('message', (result) => {
-      total += 1;
-      //processProducts(result);
+      processProducts(result);
     });
   } catch (error) {
     console.log(error.message);
+    throw new Error(error);
   }
 })();

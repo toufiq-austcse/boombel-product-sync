@@ -1,0 +1,10 @@
+version: '2.0'
+services:
+  producer:
+    build: .
+    image: producer
+    container_name: producer
+    volumes:
+      - ./token.txt:/usr/src/app/token.txt
+      - ./page.txt:/usr/src/app/page.txt
+    
