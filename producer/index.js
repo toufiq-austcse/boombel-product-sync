@@ -270,7 +270,7 @@ async function processProducts(products) {
   }
 }
 
-cron.schedule('*/7 * * * *', async () => {
+cron.schedule('*/10 * * * *', async () => {
   console.log('updating token');
   try {
     await getApiToken();
