@@ -200,7 +200,6 @@ function getAttributes(product) {
   }));
 }
 
-
 async function getApiToken() {
   try {
     let res = await axios.post('https://portal.internet-bikes.com/api/twm/auth/authenticate', {
@@ -280,12 +279,10 @@ cron.schedule('0 */8 * * * *', async () => {
   }
 });
 
-
-
- (async () => {
+(async () => {
   try {
     await getApiToken();
-    let worker1 = new Worker('./worker.js', { workerData: { start: 2601, end: 6600 } });
+    let worker1 = new Worker('./worker.js', { workerData: { start: 2944, end: 6600 } });
     worker1.on('error', (error) => {
       console.log(error);
     });
@@ -303,4 +300,3 @@ cron.schedule('0 */8 * * * *', async () => {
     throw new Error(error);
   }
 })();
- 
