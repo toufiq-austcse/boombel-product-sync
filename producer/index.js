@@ -270,18 +270,19 @@ async function processProducts(products) {
   }
 }
 
-cron.schedule('*/10 * * * *', async () => {
+cron.schedule('0 */8 * * * *', async () => {
   console.log('updating token');
   try {
     await getApiToken();
+    console.log('updated');
   } catch (error) {
     console.log('error in cron ', error.message);
   }
 });
-(async () => {
+ (async () => {
   try {
     await getApiToken();
-    let worker1 = new Worker('./worker.js', { workerData: { start: 178, end: 6600 } });
+    let worker1 = new Worker('./worker.js', { workerData: { start: 433, end: 6600 } });
     worker1.on('error', (error) => {
       console.log(error);
     });
@@ -299,3 +300,4 @@ cron.schedule('*/10 * * * *', async () => {
     throw new Error(error);
   }
 })();
+ 
