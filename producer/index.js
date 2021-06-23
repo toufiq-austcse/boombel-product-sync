@@ -281,7 +281,7 @@ cron.schedule('*/10 * * * *', async () => {
 (async () => {
   try {
     await getApiToken();
-    let worker1 = new Worker('./worker.js', { workerData: { start: 119, end: 6600 } });
+    let worker1 = new Worker('./worker.js', { workerData: { start: 178, end: 6600 } });
     worker1.on('error', (error) => {
       console.log(error);
     });

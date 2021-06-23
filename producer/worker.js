@@ -27,6 +27,6 @@ function delay(timeInMs) {
     console.log('calling  page ', page);
     let { data, meta } = await getProducts(page);
     if (data) parentPort.postMessage(data);
-    await delay(2000);
+    await delay(4000);
   }
 })();

@@ -37,7 +37,7 @@ const app = Consumer.create({
   sqs: new AWS.SQS(),
   batchSize: 10,
   waitTimeSeconds: 20,
-  pollingWaitTimeMs: 15 * 1000,
+  pollingWaitTimeMs: 10 * 1000,
   handleMessageBatch: async (messages) => {
     // do some work with `message`
     if (messages.length > 0) {
