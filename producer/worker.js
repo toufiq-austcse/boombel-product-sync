@@ -17,6 +17,9 @@ async function getProducts(page) {
     console.log(error);
   }
 }
+function delay(timeInMs) {
+  return new Promise((resolve) => setTimeout(resolve, timeInMs));
+}
 
 (async () => {
   let { start, end } = workerData;
@@ -24,5 +27,6 @@ async function getProducts(page) {
     console.log('calling  page ', page);
     let { data, meta } = await getProducts(page);
     if (data) parentPort.postMessage(data);
+    await delay(1000);
   }
 })();
