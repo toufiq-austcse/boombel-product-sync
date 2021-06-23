@@ -28,7 +28,7 @@ async function getProducts(page) {
     return res.data;
   } catch (error) {
     await getApiToken();
-    await getProducts(page);
+    return getProducts(page);
   }
 }
 function delay(timeInMs) {
