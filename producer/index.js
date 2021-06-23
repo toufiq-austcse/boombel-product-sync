@@ -279,6 +279,9 @@ cron.schedule('0 */8 * * * *', async () => {
     console.log('error in cron ', error.message);
   }
 });
+
+
+
  (async () => {
   try {
     await getApiToken();

@@ -21,12 +21,36 @@ function delay(timeInMs) {
   return new Promise((resolve) => setTimeout(resolve, timeInMs));
 }
 
+async function getApiToken() {
+  try {
+    let res = await axios.post('https://portal.internet-bikes.com/api/twm/auth/authenticate', {
+      email: 'whitebeam.europe@gmail.com',
+      password: 'Leuven3000',
+    });
+    let { token } = res.data;
+    fs.writeFileSync('token.txt', token, { encoding: 'utf-8' });
+  } catch (error) {
+    console.log('Error in getting API Token..please try 6 minutes later');
+    throw new Error(error);
+  }
+}
 (async () => {
   let { start, end } = workerData;
   for (let page = start; page <= end; page++) {
-    console.log('calling  page ', page);
-    let { data, meta } = await getProducts(page);
-    if (data) parentPort.postMessage(data);
-    await delay(4000);
+    try {
+      console.log('calling  page ', page);
+      let { data, meta } = await getProducts(page);
+      if (data) parentPort.postMessage(data);
+      await delay(4000);
+    } catch (error) {
+      if (error.response?.status !== 401) {
+        throw new Error(error);
+      }
+      await getApiToken();
+      console.log('calling  page ', page);
+      let { data, meta } = await getProducts(page);
+      if (data) parentPort.postMessage(data);
+      await delay(4000);
+    }
   }
 })();
