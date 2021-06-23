@@ -102,21 +102,21 @@ function getWeight(shippingSize) {
 }
 
 function getPrice(product) {
-  let { categories, consumer_price } = product;
+  let { categories, price } = product;
   let totalPrice = 0;
-  let vat = (21 / 100) * consumer_price;
+  let vat = (21 / 100) * price;
   categories.forEach((category) => {
     let segmentCode = category.parent_segment;
     let index = segments.findIndex((segment) => segment.code === segmentCode);
-    if (index < 0) return 0;
+    if (index < 0) return price;
     let segment = segments[index];
     if (segment.name === 'Baby' || segment.name === 'Outdoor' || segment.name === 'Health & Beauty') {
-      totalPrice = consumer_price + (40 / 100) * consumer_price + vat + 4;
+      totalPrice = price + (40 / 100) * price + vat + 4;
       return totalPrice.toFixed(2);
     }
   });
 
-  totalPrice = consumer_price + (30 / 100) * consumer_price + vat + 4;
+  totalPrice = price + (30 / 100) * price + vat + 4;
   return totalPrice.toFixed(2);
 }
 function getCategories(product) {
@@ -282,7 +282,7 @@ cron.schedule('0 */8 * * * *', async () => {
  (async () => {
   try {
     await getApiToken();
-    let worker1 = new Worker('./worker.js', { workerData: { start: 2222, end: 6600 } });
+    let worker1 = new Worker('./worker.js', { workerData: { start: 2252, end: 6600 } });
     worker1.on('error', (error) => {
       console.log(error);
     });
