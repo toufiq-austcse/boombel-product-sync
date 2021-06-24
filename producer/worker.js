@@ -1,8 +1,9 @@
 const { parentPort, workerData } = require('worker_threads');
 let axios = require('axios');
 let fs = require('fs');
-let token = fs.readFileSync('token.txt', { encoding: 'utf-8' });
-
+function delay(timeInMs) {
+  return new Promise((resolve) => setTimeout(resolve, timeInMs));
+}
 async function getApiToken() {
   try {
     let res = await axios.post('https://portal.internet-bikes.com/api/twm/auth/authenticate', {
@@ -19,6 +20,7 @@ async function getApiToken() {
 
 async function getProducts(page) {
   try {
+    let token = fs.readFileSync('token.txt', { encoding: 'utf-8' });
     let res = await axios.default.get(`https://portal.internet-bikes.com/api/twm/products?page=${page}`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -27,12 +29,11 @@ async function getProducts(page) {
     fs.writeFileSync('page.txt', page.toString(), { encoding: 'utf-8' });
     return res.data;
   } catch (error) {
+    console.log('updating token on error');
+    await delay(1000);
     await getApiToken();
     return getProducts(page);
   }
-}
-function delay(timeInMs) {
-  return new Promise((resolve) => setTimeout(resolve, timeInMs));
 }
 
 (async () => {
