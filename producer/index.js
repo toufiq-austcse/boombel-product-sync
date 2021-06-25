@@ -282,7 +282,7 @@ async function processProducts(products) {
 (async () => {
   try {
     await getApiToken();
-    let worker1 = new Worker('./worker.js', { workerData: { start: 4778, end: 6600 } });
+    let worker1 = new Worker('./worker.js', { workerData: { start: 6096, end: 6600 } });
     worker1.on('error', (error) => {
       console.log(error);
     });

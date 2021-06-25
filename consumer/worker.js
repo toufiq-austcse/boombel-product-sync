@@ -48,6 +48,7 @@ const app = Consumer.create({
         try {
           await postToBoombel(JSON.parse(message.Body));
           parentPort.postMessage(1);
+         await delay(1000);
         } catch (error) {
           console.log('Error ', error);
           throw new Error(error);
