@@ -40,6 +40,7 @@ const app = Consumer.create({
   sqs: new AWS.SQS(),
   batchSize: 10,
   waitTimeSeconds: 20,
+  visibilityTimeout: 3 * 60,
   pollingWaitTimeMs: 5 * 1000,
   handleMessageBatch: async (messages) => {
     // do some work with `message`
@@ -48,7 +49,7 @@ const app = Consumer.create({
         try {
           await postToBoombel(JSON.parse(message.Body));
           parentPort.postMessage(1);
-         await delay(500);
+          await delay(500);
         } catch (error) {
           console.log('Error ', error);
           throw new Error(error);
