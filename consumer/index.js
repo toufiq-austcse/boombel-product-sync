@@ -35,7 +35,6 @@ try {
 
   //Listen for a message from worker
   worker2.on('message', (result) => {
-    
     let total = fs.readFileSync(logFilePath, { encoding: 'utf-8' });
     if (!total) {
       fs.writeFileSync(logFilePath, '0', { encoding: 'utf-8' });
@@ -45,72 +44,71 @@ try {
       console.log('total ', total);
     }
   });
+ /*  let worker3 = new Worker('./worker.js');
+  worker3.on('error', (error) => {
+    console.log(error);
+  }); */
 
-#  let worker3 = new Worker('./worker.js');
- # worker3.on('error', (error) => {
-  #  console.log(error);
- # });
-
-  #worker3.on('exit', (exitCode) => {
-   # console.log(exitCode);
-  #});
+  /* worker3.on('exit', (exitCode) => {
+   console.log(exitCode);
+});
 
   //Listen for a message from worker
- # worker3.on('message', (result) => {
+ worker3.on('message', (result) => {
     
-  #  let total = fs.readFileSync(logFilePath, { encoding: 'utf-8' });
-   # if (!total) {
-    #  fs.writeFileSync(logFilePath, '0', { encoding: 'utf-8' });
-    #} else {
-     # total = parseInt(total) + result;
-     # fs.writeFileSync(logFilePath, total.toString(), { encoding: 'utf-8' });
+  let total = fs.readFileSync(logFilePath, { encoding: 'utf-8' });
+   if (!total) {
+    fs.writeFileSync(logFilePath, '0', { encoding: 'utf-8' });
+  } else {
+     total = parseInt(total) + result;
+     fs.writeFileSync(logFilePath, total.toString(), { encoding: 'utf-8' });
       #console.log('total ', total);
-    #}
-  #});
+  }
+});
 
-  #let worker4 = new Worker('./worker.js');
-  #worker4.on('error', (error) => {
-   # console.log(error);
-  #});
+let worker4 = new Worker('./worker.js');
+worker4.on('error', (error) => {
+   console.log(error);
+});
 
-  #worker4.on('exit', (exitCode) => {
-   # console.log(exitCode);
-  #});
+worker4.on('exit', (exitCode) => {
+   console.log(exitCode);
+});
 
   //Listen for a message from worker
-  #worker4.on('message', (result) => {
+worker4.on('message', (result) => {
   
-   # let total = fs.readFileSync(logFilePath, { encoding: 'utf-8' });
-    #if (!total) {
+   let total = fs.readFileSync(logFilePath, { encoding: 'utf-8' });
+  if (!total) {
      # fs.writeFileSync(logFilePath, '0', { encoding: 'utf-8' });
-    #} else {
-     # total = parseInt(total) + result;
-      #fs.writeFileSync(logFilePath, total.toString(), { encoding: 'utf-8' });
-      #console.log('total ', total);
-   # }
-  #});
+  } else {
+     total = parseInt(total) + result;
+    fs.writeFileSync(logFilePath, total.toString(), { encoding: 'utf-8' });
+    console.log('total ', total);
+   }
+});
 
-  #let worker5 = new Worker('./worker.js');
- # worker5.on('error', (error) => {
-  #  console.log(error);
- # });
+let worker5 = new Worker('./worker.js');
+ worker5.on('error', (error) => {
+  console.log(error);
+ });
 
-  #worker5.on('exit', (exitCode) => {
-   # console.log(exitCode);
- # });
+worker5.on('exit', (exitCode) => {
+   console.log(exitCode);
+ });
 
   //Listen for a message from worker
-  #worker5.on('message', (result) => {
+  worker5.on('message', (result) => {
     
-   # let total = fs.readFileSync(logFilePath, { encoding: 'utf-8' });
-    #if (!total) {
-     # fs.writeFileSync(logFilePath, '0', { encoding: 'utf-8' });
-    #} else {
-     # total = parseInt(total) + result;
-      #fs.writeFileSync(logFilePath, total.toString(), { encoding: 'utf-8' });
-      #console.log('total ', total);
-    #}
-  #});
+   let total = fs.readFileSync(logFilePath, { encoding: 'utf-8' });
+  if (!total) {
+     fs.writeFileSync(logFilePath, '0', { encoding: 'utf-8' });
+  } else {
+     total = parseInt(total) + result;
+    fs.writeFileSync(logFilePath, total.toString(), { encoding: 'utf-8' });
+    console.log('total ', total);
+  }
+}); */
 } catch (error) {
   console.log(error.message);
   throw new Error(error);
