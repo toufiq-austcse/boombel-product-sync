@@ -24,7 +24,7 @@ try {
     }
   });
 
-  let worker2 = new Worker('./worker.js');
+/*   let worker2 = new Worker('./worker.js');
   worker2.on('error', (error) => {
     console.log(error);
   });
@@ -63,7 +63,7 @@ try {
       fs.writeFileSync(logFilePath, total.toString(), { encoding: 'utf-8' });
       console.log('total ', total);
     }
-  }); 
+  });  */
 
   /*let worker4 = new Worker('./worker.js');
 worker4.on('error', (error) => {
