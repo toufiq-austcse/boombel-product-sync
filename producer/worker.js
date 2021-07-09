@@ -38,7 +38,7 @@ async function getProducts(page) {
 
 (async () => {
   let { start, end } = workerData;
-  for (let page = start; page <= end; page++) {
+  for (let page = start; page >= end; page--) {
     console.log('calling  page ', page);
     let { data, meta } = await getProducts(page);
     if (data) parentPort.postMessage(data);
