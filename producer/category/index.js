@@ -3,10 +3,10 @@ let axios = require('axios');
 
 async function createCategory(data) {
   try {
-    let res = await axios.post('https://boombel.eu/wp-json/wc/v3/products/categories', data, {
+    let res = await axios.post('https://boombel.com/wp-json/wc/v3/products/categories', data, {
       auth: {
-        username: `ck_380d746b8f0878e48bec98d831906c907ab4d8df`,
-        password: `cs_2ed49a196bc9f0da900c23617a8a251218f4d462`,
+        username: `ck_adaf805d4e9cd352f1aa6f282712aaa0423d3251`,
+        password: `cs_3051aa1312e7a00c6234ab95f7150de9ca8981ca`,
       },
     });
     return res.data;
@@ -24,58 +24,61 @@ let res = fs.readFileSync('data/Baby.csv', { encoding: 'utf-8' });
 let rows = res.split('\n');
 let segments = [
   {
-    id: 7429,
+    id: 196,
     name: 'Toys',
   },
   {
-    id: 7430,
+    id: 197,
     name: 'Sports & Casuals',
   },
   {
-    id: 7431,
+    id: 198,
     name: 'Pet',
   },
   {
-    id: 7432,
+    id: 199,
     name: 'Party',
   },
   {
-    id: 7433,
+    id: 200,
     name: 'Outdoor',
   },
   {
-    id: 7434,
+    id: 201,
     name: 'Home & Garden',
   },
   {
-    id: 7435,
+    id: 202,
     name: 'Health & Beauty',
   },
   {
-    id: 7436,
+    id: 203,
     name: 'Eyewear',
   },
   {
-    id: 7437,
+    id: 204,
     name: 'Car',
   },
   {
-    id: 7438,
+    id: 205,
     name: 'Books',
   },
   {
-    id: 7439,
+    id: 206,
     name: 'Bike',
   },
   {
-    id: 7440,
+    id: 207,
     name: 'Baby',
-  }
+  },
 ];
+/*
 
+Row 150 created with parentId 5434
+*/
 (async () => {
   let parentId;
-  let segmentId = 7440;
+  let segmentId = 207;
   for (let i = 0; i < rows.length; i++) {
     let row = rows[i];
     try {
@@ -101,7 +104,7 @@ let segments = [
       console.log(`Row ${i + 1} created with parentId ${parentId}`);
     } catch (error) {
       console.log('error ', error.message, row);
-      throw new Error(error)
+      throw new Error(error);
     }
   }
 })();

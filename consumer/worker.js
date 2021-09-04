@@ -4,8 +4,8 @@ let fs = require('fs');
 let axios = require('axios');
 const { parentPort, workerData } = require('worker_threads');
 const QUEUE_URL = `https://sqs.ap-southeast-1.amazonaws.com/584482757797/products`;
-let AWSAccessKeyId = 'AKIAYQFPDDSSQ76MLM4Y';
-let AWSSecretKey = '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';
+let AWSAccessKeyId = process.env.AWS_ACCESS_KEY_ID;
+let AWSSecretKey = process.env.AWS_SECRET_KEY;
 
 function delay(timeInMs) {
   return new Promise((resolve) => setTimeout(resolve, timeInMs));
@@ -15,8 +15,8 @@ async function postToBoombel(modifiedData) {
   try {
     let res = await axios.post('https://boombel.eu/wp-json/wc/v3/products', modifiedData, {
       auth: {
-        username: `ck_380d746b8f0878e48bec98d831906c907ab4d8df`,
-        password: `cs_2ed49a196bc9f0da900c23617a8a251218f4d462`,
+        username: process.env.WP_USERNAME,
+        password: process.env.WP_PASSWORD,
       },
     });
   } catch (error) {

@@ -1,10 +1,15 @@
-version: '2.0'
+version: '3.0'
 services:
   producer:
     build: .
     image: producer
     container_name: producer
+    env_file: '.env'
+    environment:
+      - AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+      - AWS_SECRET_KEY=$AWS_SECRET_KEY
+      - IB_EMAIL=$IB_EMAIL
+      - IB_PASSWORD=$IB_PASSWORD
     volumes:
       - ./token.txt:/usr/src/app/token.txt
       - ./page.txt:/usr/src/app/page.txt
-    

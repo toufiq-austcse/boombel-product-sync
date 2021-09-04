@@ -3,11 +3,13 @@ const axios = require('axios');
 const boombelCategories = require('./categories');
 const AWS = require('aws-sdk');
 const fs = require('fs');
-let cron = require('node-cron');
+require('dotenv').config({
+  path: '.env',
+});
 
 const QUEUE_URL = `https://sqs.ap-southeast-1.amazonaws.com/584482757797/products`;
-let AWSAccessKeyId = 'AKIAYQFPDDSSQ76MLM4Y';
-let AWSSecretKey = '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';
+let AWSAccessKeyId = process.env.AWS_ACCESS_KEY_ID;
+let AWSSecretKey = process.env.AWS_SECRET_KEY;
 let sqs = new AWS.SQS({
   region: 'ap-southeast-1',
   credentials: {
@@ -19,64 +21,69 @@ let count = 0;
 //db.get('products').push({ name: 'sadi' }).write();
 let segments = [
   {
-    id: 7439,
+    id: 206,
     code: 1,
     name: 'Bike',
   },
   {
-    id: 7439,
+    id: 206,
     code: 2,
     name: 'Bike parts',
   },
   {
-    id: 7429,
+    id: 196,
     code: 3,
     name: 'Toys',
   },
   {
-    id: 7430,
+    id: 197,
     code: 5,
     name: 'Sports & Casuals',
   },
   {
-    id: 7436,
+    id: 203,
     code: 7,
     name: 'Eyewear',
   },
   {
-    id: 7438,
+    id: 205,
     code: 8,
     name: 'Books',
   },
   {
-    id: 7440,
+    id: 207,
     code: 9,
     name: 'Baby',
   },
   {
-    id: 7433,
+    id: 200,
     code: 10,
     name: 'Outdoor',
   },
   {
-    id: 7434,
+    id: 201,
     code: 11,
     name: 'Home & Garden',
   },
   {
-    id: 7432,
+    id: 199,
     code: 12,
     name: 'Party',
   },
   {
-    id: 7431,
+    id: 198,
     code: 13,
     name: 'Pet',
   },
   {
-    id: 7435,
+    id: 202,
     code: 14,
     name: 'Health & Beauty',
+  },
+  {
+    id: 204,
+    code: 6,
+    name: 'Car',
   },
 ];
 
@@ -193,18 +200,18 @@ function getAttributes(product) {
       attr.name_en === 'Brand'
   );
   return attributes.map((att) => ({
-    id: getAttributeId(att.name_en),
     name: att.name_en,
     visible: true,
     global: true,
+    options: [att.value_en],
   }));
 }
 
 async function getApiToken() {
   try {
     let res = await axios.post('https://portal.internet-bikes.com/api/twm/auth/authenticate', {
-      email: 'whitebeam.europe@gmail.com',
-      password: 'Leuven3000',
+      email: process.env.IB_EMAIL,
+      password: process.env.IB_PASSWORD,
     });
     let { token } = res.data;
     fs.writeFileSync('token.txt', token, { encoding: 'utf-8' });
@@ -232,10 +239,12 @@ async function sendToSqs(body) {
 }
 let i = 0;
 async function processProducts(products) {
+  console.log(products.length);
   for (let product of products) {
     try {
       await delay(1000);
       let categories = getCategories(product);
+      console.log('length ', categories.length);
       if (categories.length === 0) continue;
       let modifiedProduct = {
         name: getProductName(product.name_en),
@@ -270,7 +279,7 @@ async function processProducts(products) {
 }
 
 //cron.schedule('0 */8 * * * *', async () => {
-  /* console.log('updating token');
+/* console.log('updating token');
   try {
     await getApiToken();
     console.log('updated');
@@ -282,7 +291,7 @@ async function processProducts(products) {
 (async () => {
   try {
     await getApiToken();
-    let worker1 = new Worker('./worker.js', { workerData: { start: 6586, end: 2252 } });
+    let worker1 = new Worker('./worker.js', { workerData: { start: 1, end: 6586 } });
     worker1.on('error', (error) => {
       console.log(error);
     });

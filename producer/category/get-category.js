@@ -8,8 +8,8 @@ async function getCategories(page) {
   try {
     let res = await axios.get(`https://boombel.eu/wp-json/wc/v3/products/categories?page=${page}`, {
       auth: {
-        username: `ck_380d746b8f0878e48bec98d831906c907ab4d8df`,
-        password: `cs_2ed49a196bc9f0da900c23617a8a251218f4d462`,
+        username: ``,
+        password: ``,
       },
     });
     return res.data;

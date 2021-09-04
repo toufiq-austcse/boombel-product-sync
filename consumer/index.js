@@ -1,4 +1,5 @@
 const { Worker } = require('worker_threads');
+require('dotenv').config({ path: '.env' });
 let fs = require('fs');
 let logFilePath = 'total.txt';
 
@@ -24,7 +25,7 @@ try {
     }
   });
 
-/*   let worker2 = new Worker('./worker.js');
+  /*   let worker2 = new Worker('./worker.js');
   worker2.on('error', (error) => {
     console.log(error);
   });
