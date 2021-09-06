@@ -15,7 +15,6 @@ try {
 
   //Listen for a message from worker
   worker1.on('message', (result) => {
-    console.log('result ', result);
     let total = fs.readFileSync(logFilePath, { encoding: 'utf-8' });
     if (!total) {
       fs.writeFileSync(logFilePath, '0', { encoding: 'utf-8' });
