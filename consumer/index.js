@@ -15,6 +15,7 @@ try {
 
   //Listen for a message from worker
   worker1.on('message', (result) => {
+    console.log('result ', result);
     let total = fs.readFileSync(logFilePath, { encoding: 'utf-8' });
     if (!total) {
       fs.writeFileSync(logFilePath, '0', { encoding: 'utf-8' });
@@ -25,7 +26,7 @@ try {
     }
   });
 
-  /*   let worker2 = new Worker('./worker.js');
+  let worker2 = new Worker('./worker.js');
   worker2.on('error', (error) => {
     console.log(error);
   });
@@ -45,7 +46,8 @@ try {
       console.log('total ', total);
     }
   });
-   let worker3 = new Worker('./worker.js');
+  /*
+  let worker3 = new Worker('./worker.js');
   worker3.on('error', (error) => {
     console.log(error);
   });
@@ -53,7 +55,7 @@ try {
   worker3.on('exit', (exitCode) => {
     console.log(exitCode);
   });
-
+  /*
   //Listen for a message from worker
   worker3.on('message', (result) => {
     let total = fs.readFileSync(logFilePath, { encoding: 'utf-8' });

@@ -13,12 +13,13 @@ function delay(timeInMs) {
 
 async function postToBoombel(modifiedData) {
   try {
-    let res = await axios.post('https://boombel.eu/wp-json/wc/v3/products', modifiedData, {
+    let res = await axios.post('https://boombel.com/wp-json/wc/v3/products', modifiedData, {
       auth: {
         username: process.env.WP_USERNAME,
         password: process.env.WP_PASSWORD,
       },
     });
+    parentPort.postMessage(1);
   } catch (error) {
     if (error.response?.data?.data?.status === 400) {
       console.log('400 error');
@@ -48,7 +49,7 @@ const app = Consumer.create({
       for (let message of messages) {
         try {
           await postToBoombel(JSON.parse(message.Body));
-          parentPort.postMessage(1);
+
           await delay(1000);
         } catch (error) {
           console.log('Error ', error);

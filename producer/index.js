@@ -175,15 +175,17 @@ function getImages(product) {
 function getAttributeId(name) {
   switch (name) {
     case 'Size':
-      return 6;
+      return 10;
     case 'Material':
-      return 3;
+      return 13;
     case 'Gender':
-      return 5;
+      return 14;
     case 'Colour':
-      return 4;
+      return 15;
     case 'Brand':
-      return 2;
+      return 19;
+    case 'Age':
+      return 16;
     default:
       return 0;
   }
@@ -197,14 +199,26 @@ function getAttributes(product) {
       attr.name_en === 'Material' ||
       attr.name_en === 'Gender' ||
       attr.name_en === 'Colour' ||
-      attr.name_en === 'Brand'
+      attr.name_en === 'Brand' ||
+      attr.name_en === 'Age'
   );
-  return attributes.map((att) => ({
+  let modifiedAttributes = [];
+  modifiedAttributes.push({
+    id: getAttributeId('Brand'),
+    name: 'Brand',
+    visible: true,
+    global: true,
+    options: [product?.brand],
+  });
+  let mappedAttr = attributes.map((att) => ({
+    id: getAttributeId(att.name_en),
     name: att.name_en,
     visible: true,
     global: true,
     options: [att.value_en],
   }));
+  modifiedAttributes.push(...mappedAttr);
+  return modifiedAttributes;
 }
 
 async function getApiToken() {
@@ -224,6 +238,9 @@ function delay(timeInMs) {
   return new Promise((resolve) => setTimeout(resolve, timeInMs));
 }
 
+function getBrands(product) {
+  return product.brand ? [{ id: getAttributeId('Brand'), name: product.brand }] : [];
+}
 async function sendToSqs(body) {
   try {
     let res = await sqs
@@ -239,12 +256,10 @@ async function sendToSqs(body) {
 }
 let i = 0;
 async function processProducts(products) {
-  console.log(products.length);
   for (let product of products) {
     try {
       await delay(1000);
       let categories = getCategories(product);
-      console.log('length ', categories.length);
       if (categories.length === 0) continue;
       let modifiedProduct = {
         name: getProductName(product.name_en),

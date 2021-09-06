@@ -6,7 +6,7 @@ function delay(timeInMs) {
 }
 async function getCategories(page) {
   try {
-    let res = await axios.get(`https://boombel.eu/wp-json/wc/v3/products/categories?page=${page}`, {
+    let res = await axios.get(`https://boombel.com/wp-json/wc/v3/products/categories?page=${page}`, {
       auth: {
         username: ``,
         password: ``,

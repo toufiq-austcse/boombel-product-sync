@@ -108,3 +108,15 @@ Row 150 created with parentId 5434
     }
   }
 })();
+/*
+
+curl -X POST https://boombel.com/wp-json/wc/v2/products/brands \
+ -u ck_adaf805d4e9cd352f1aa6f282712aaa0423d3251:cs_3051aa1312e7a00c6234ab95f7150de9ca8981ca \
+ -H "Content-Type: application/json" \
+ -d '{
+ "name": "Apple",
+ "image": {
+   "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/768px-Apple_logo_black.svg.png"
+  }
+}'
+*/
